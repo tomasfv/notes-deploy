@@ -1,0 +1,85 @@
+import { useState } from 'react';
+
+interface NoteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (title: string, content: string) => void;
+}
+
+const NoteModal = ({ isOpen, onClose, onSubmit }: NoteModalProps) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (title.trim() && content.trim()) {
+      onSubmit(title.trim(), content.trim());
+      setTitle('');
+      setContent('');
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    setTitle('');
+    setContent('');
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg w-full max-w-lg mx-4 shadow-xl">
+        <div className="flex justify-between items-center p-5 border-b border-zinc-200">
+          <h2 className="text-lg font-semibold text-zinc-900">New Note</h2>
+          <button
+            onClick={handleClose}
+            className="text-zinc-400 hover:text-zinc-600 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5">
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900"
+            />
+          </div>
+          <div className="mb-5">
+            <textarea
+              placeholder="Write your note here..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={6}
+              className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 resize-none"
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 text-zinc-600 hover:bg-zinc-100 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default NoteModal;

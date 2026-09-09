@@ -1,9 +1,21 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import NotesPage from './pages/NotesPage';
+import CategoriesPage from './pages/CategoriesPage';
+import ArchivedPage from './pages/ArchivedPage';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold p-8">Ensolvers Notes</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<NotesPage />} />
+          <Route path="categories" element={<CategoriesPage />} />
+          <Route path="archived" element={<ArchivedPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
