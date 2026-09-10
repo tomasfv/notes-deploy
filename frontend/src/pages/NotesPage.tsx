@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Note } from '../types';
+import { Note, Category } from '../types';
 import { noteService } from '../services/noteService';
+import { categoryService } from '../services/categoryService';
 import NoteCard from '../components/NoteCard';
 import EmptyCard from '../components/EmptyCard';
 import NoteModal from '../components/NoteModal';
@@ -8,14 +9,16 @@ import EditNoteModal from '../components/EditNoteModal';
 
 const NotesPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
-  const loadNotes = async () => {
+  const loadNotes = async (categoryId?: string | null) => {
     try {
-      const data = await noteService.getActiveNotes();
+      const data = await noteService.getActiveNotes(categoryId || undefined);
       setNotes(data);
     } catch (error) {
       console.error('Failed to load notes:', error);
@@ -24,23 +27,46 @@ const NotesPage = () => {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const data = await categoryService.getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
+  };
+
   useEffect(() => {
+    loadCategories();
     loadNotes();
   }, []);
 
-  const handleCreateNote = async (title: string, content: string) => {
+  const handleFilterByCategory = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+    loadNotes(categoryId);
+  };
+
+  const handleCreateNote = async (title: string, content: string, categoryIds?: string[]) => {
     try {
-      const newNote = await noteService.createNote({ title, content });
-      setNotes([newNote, ...notes]);
+      const newNote = await noteService.createNote({ title, content, categoryIds });
+      if (selectedCategoryId) {
+        loadNotes(selectedCategoryId);
+      } else {
+        setNotes([newNote, ...notes]);
+      }
     } catch (error) {
       console.error('Failed to create note:', error);
     }
   };
 
-  const handleEditNote = async (id: string, title: string, content: string) => {
+  const handleEditNote = async (id: string, title: string, content: string, categoryIds?: string[]) => {
     try {
-      const updatedNote = await noteService.updateNote(id, { title, content });
-      setNotes(notes.map((n) => (n.id === id ? updatedNote : n)));
+      const updatedNote = await noteService.updateNote(id, { title, content, categoryIds });
+      if (selectedCategoryId) {
+        loadNotes(selectedCategoryId);
+      } else {
+        setNotes(notes.map((n) => (n.id === id ? updatedNote : n)));
+      }
     } catch (error) {
       console.error('Failed to update note:', error);
     }
@@ -74,6 +100,36 @@ const NotesPage = () => {
         <h1 className="text-3xl font-bold text-zinc-900">All Notes</h1>
         <p className="text-zinc-500 mt-1">{notes.length} notes</p>
       </div>
+
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => handleFilterByCategory(null)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedCategoryId === null
+                ? 'bg-zinc-900 text-white'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+            }`}
+          >
+            All
+          </button>
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => handleFilterByCategory(category.id)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                selectedCategoryId === category.id
+                  ? 'bg-zinc-900 text-white'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <EmptyCard onClick={() => setIsCreateModalOpen(true)} />
         {notes.map((note) => (

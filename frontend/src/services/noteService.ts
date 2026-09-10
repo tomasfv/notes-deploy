@@ -6,13 +6,15 @@ const api = axios.create({
 });
 
 export const noteService = {
-  async getActiveNotes(): Promise<Note[]> {
-    const { data } = await api.get<Note[]>('/notes');
+  async getActiveNotes(categoryId?: string): Promise<Note[]> {
+    const params = categoryId ? { categoryId } : {};
+    const { data } = await api.get<Note[]>('/notes', { params });
     return data;
   },
 
-  async getArchivedNotes(): Promise<Note[]> {
-    const { data } = await api.get<Note[]>('/notes/archived');
+  async getArchivedNotes(categoryId?: string): Promise<Note[]> {
+    const params = categoryId ? { categoryId } : {};
+    const { data } = await api.get<Note[]>('/notes/archived', { params });
     return data;
   },
 

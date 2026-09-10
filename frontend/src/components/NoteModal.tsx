@@ -1,23 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Category } from '../types';
+import { categoryService } from '../services/categoryService';
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string, content: string) => void;
+  onSubmit: (title: string, content: string, categoryIds?: string[]) => void;
 }
 
 const NoteModal = ({ isOpen, onClose, onSubmit }: NoteModalProps) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      categoryService.getCategories().then(setCategories).catch(console.error);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim() && content.trim()) {
-      onSubmit(title.trim(), content.trim());
+      onSubmit(title.trim(), content.trim(), selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined);
       setTitle('');
       setContent('');
+      setSelectedCategoryIds([]);
       onClose();
     }
   };
@@ -25,7 +36,16 @@ const NoteModal = ({ isOpen, onClose, onSubmit }: NoteModalProps) => {
   const handleClose = () => {
     setTitle('');
     setContent('');
+    setSelectedCategoryIds([]);
     onClose();
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
+    );
   };
 
   return (
@@ -52,7 +72,7 @@ const NoteModal = ({ isOpen, onClose, onSubmit }: NoteModalProps) => {
               className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900"
             />
           </div>
-          <div className="mb-5">
+          <div className="mb-4">
             <textarea
               placeholder="Write your note here..."
               value={content}
@@ -61,6 +81,27 @@ const NoteModal = ({ isOpen, onClose, onSubmit }: NoteModalProps) => {
               className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 resize-none"
             />
           </div>
+          {categories.length > 0 && (
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-zinc-700 mb-2">Categories</label>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => toggleCategory(category.id)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategoryIds.includes(category.id)
+                        ? 'bg-zinc-900 text-white'
+                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex justify-end gap-3">
             <button
               type="button"

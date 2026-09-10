@@ -50,6 +50,18 @@ const NoteCard = ({
       </div>
       <p className="text-zinc-500 text-xs mb-3">{formatDate(note.createdAt)}</p>
       <p className="text-zinc-700 text-sm line-clamp-4">{note.content}</p>
+      {note.categories && note.categories.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-zinc-100">
+          {note.categories.map((category) => (
+            <span
+              key={category.id}
+              className="px-2 py-0.5 bg-zinc-100 text-zinc-600 text-xs rounded-full"
+            >
+              {category.name}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

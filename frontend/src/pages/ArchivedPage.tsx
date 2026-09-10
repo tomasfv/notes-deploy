@@ -48,9 +48,9 @@ const ArchivedPage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleEditNote = async (id: string, title: string, content: string) => {
+  const handleEditNote = async (id: string, title: string, content: string, categoryIds?: string[]) => {
     try {
-      const updatedNote = await noteService.updateNote(id, { title, content });
+      const updatedNote = await noteService.updateNote(id, { title, content, categoryIds });
       setNotes(notes.map((n) => (n.id === id ? updatedNote : n)));
     } catch (error) {
       console.error('Failed to update note:', error);
