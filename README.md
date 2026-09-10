@@ -20,6 +20,7 @@ A full-stack web application for creating, editing, archiving, and filtering not
 | Tailwind CSS | ^3.4.0 |
 | Axios | ^1.6.2 |
 | React Router DOM | ^7.18.3 |
+| React Hot Toast | ^2.5.2 |
 
 ### Backend
 
@@ -164,6 +165,26 @@ DB_PASSWORD=your_password_here
 | DELETE | /api/categories/:id | Delete a category |
 | POST | /api/notes/:id/categories | Assign categories to a note |
 | DELETE | /api/notes/:id/categories/:categoryId | Remove a category from a note |
+
+## Features
+
+### Toast Notifications (React Hot Toast)
+
+Non-intrusive toast notifications for user feedback:
+
+| Action | Toast |
+|--------|-------|
+| Create note | Success / Error |
+| Edit note | Success / Error |
+| Delete note | Confirmation dialog → Success / Error |
+| Archive note | Success / Error |
+| Unarchive note | Success / Error |
+| Create category | Success / Error |
+| Edit category | Success / Error |
+| Delete category | Confirmation dialog → Success / Error |
+
+- Toasts are centered at the top of the screen
+- Delete operations show a confirmation dialog before proceeding
 
 ## Project Structure
 

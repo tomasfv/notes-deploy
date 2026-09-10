@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Note } from '../types';
 import { noteService } from '../services/noteService';
 import NoteCard from '../components/NoteCard';
@@ -34,13 +35,35 @@ const ArchivedPage = () => {
     }
   };
 
-  const handleDeleteNote = async (id: string) => {
-    try {
-      await noteService.deleteNote(id);
-      setNotes(notes.filter((n) => n.id !== id));
-    } catch (error) {
-      console.error('Failed to delete note:', error);
-    }
+  const confirmDelete = (id: string) => {
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <p className="font-medium text-zinc-900">Delete this note?</p>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await noteService.deleteNote(id);
+                setNotes((prev) => prev.filter((n) => n.id !== id));
+                toast.success('Note deleted');
+              } catch (error) {
+                toast.error('Failed to delete note');
+              }
+            }}
+            className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+          >
+            Yes, delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 bg-zinc-200 text-zinc-700 text-sm rounded-lg hover:bg-zinc-300"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
   };
 
   const openEditModal = (note: Note) => {
@@ -83,7 +106,7 @@ const ArchivedPage = () => {
               note={note}
               onEdit={openEditModal}
               onUnarchive={handleUnarchiveNote}
-              onDelete={handleDeleteNote}
+              onDelete={confirmDelete}
               showUnarchiveOption
               showDeleteOption
             />

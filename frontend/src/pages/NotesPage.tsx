@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Note, Category } from '../types';
 import { noteService } from '../services/noteService';
 import { categoryService } from '../services/categoryService';
@@ -54,8 +55,9 @@ const NotesPage = () => {
       } else {
         setNotes([newNote, ...notes]);
       }
+      toast.success('Note created');
     } catch (error) {
-      console.error('Failed to create note:', error);
+      toast.error('Failed to create note');
     }
   };
 
@@ -67,8 +69,9 @@ const NotesPage = () => {
       } else {
         setNotes(notes.map((n) => (n.id === id ? updatedNote : n)));
       }
+      toast.success('Note updated');
     } catch (error) {
-      console.error('Failed to update note:', error);
+      toast.error('Failed to update note');
     }
   };
 

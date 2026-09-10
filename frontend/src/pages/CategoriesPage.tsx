@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Category } from '../types';
 import { categoryService } from '../services/categoryService';
 import DropdownMenu from '../components/DropdownMenu';
@@ -40,6 +41,7 @@ const CategoriesPage = () => {
       setCategories([...categories, created]);
       setNewName('');
       setIsCreateModalOpen(false);
+      toast.success('Category created');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create category');
     }
@@ -64,14 +66,35 @@ const CategoriesPage = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
-    try {
-      await categoryService.deleteCategory(id);
-      setCategories(categories.filter((c) => c.id !== id));
-    } catch (err) {
-      console.error('Failed to delete category:', err);
-    }
+  const confirmDelete = (id: string) => {
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <p className="font-medium text-zinc-900">Delete this category?</p>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                await categoryService.deleteCategory(id);
+                setCategories((prev) => prev.filter((c) => c.id !== id));
+                toast.success('Category deleted');
+              } catch (err) {
+                toast.error('Failed to delete category');
+              }
+            }}
+            className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+          >
+            Yes, delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 bg-zinc-200 text-zinc-700 text-sm rounded-lg hover:bg-zinc-300"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: Infinity });
   };
 
   const openEditModal = (category: Category) => {
@@ -126,7 +149,7 @@ const CategoriesPage = () => {
                 <DropdownMenu
                   items={[
                     { label: 'Edit', onClick: () => openEditModal(category) },
-                    { label: 'Delete', onClick: () => handleDelete(category.id) },
+                    { label: 'Delete', onClick: () => confirmDelete(category.id) },
                   ]}
                 />
               </div>
