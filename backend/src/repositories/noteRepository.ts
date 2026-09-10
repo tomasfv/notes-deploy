@@ -17,22 +17,22 @@ class NoteRepository {
   async findAll(archived: boolean = false): Promise<Note[]> {
     return Note.findAll({
       where: { archived },
-      include: [Category],
+      include: [{ model: Category, as: 'categories' }],
       order: [['createdAt', 'DESC']],
     });
   }
 
   async findById(id: string): Promise<Note | null> {
-    return Note.findByPk(id, { include: [Category] });
+    return Note.findByPk(id, { include: [{ model: Category, as: 'categories' }] });
   }
 
   async findByCategoryId(categoryId: string, archived: boolean = false): Promise<Note[]> {
-    const { NoteCategory } = await import('../models');
     return Note.findAll({
       where: { archived },
       include: [
         {
           model: Category,
+          as: 'categories',
           where: { id: categoryId },
           through: { attributes: [] },
         },

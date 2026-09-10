@@ -1,12 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import sequelize from '../config/database';
+import Category from './Category';
 
 class Note extends Model {
   declare id: string;
   declare title: string;
   declare content: string;
   declare archived: boolean;
+  declare categories?: Category[];
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
   declare setCategories: (ids: string[]) => Promise<void>;
