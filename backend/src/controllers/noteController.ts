@@ -4,7 +4,8 @@ import noteService from '../services/noteService';
 class NoteController {
   async getNotes(req: Request, res: Response): Promise<void> {
     try {
-      const notes = await noteService.getActiveNotes();
+      const { categoryId } = req.query;
+      const notes = await noteService.getActiveNotes(categoryId as string | undefined);
       res.json(notes);
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
@@ -13,7 +14,8 @@ class NoteController {
 
   async getArchivedNotes(req: Request, res: Response): Promise<void> {
     try {
-      const notes = await noteService.getArchivedNotes();
+      const { categoryId } = req.query;
+      const notes = await noteService.getArchivedNotes(categoryId as string | undefined);
       res.json(notes);
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });
@@ -35,8 +37,8 @@ class NoteController {
 
   async createNote(req: Request, res: Response): Promise<void> {
     try {
-      const { title, content } = req.body;
-      const note = await noteService.createNote({ title, content });
+      const { title, content, categoryIds } = req.body;
+      const note = await noteService.createNote({ title, content, categoryIds });
       res.status(201).json(note);
     } catch (error) {
       if (error instanceof Error && (error.message === 'Title is required' || error.message === 'Content is required')) {
@@ -49,8 +51,8 @@ class NoteController {
 
   async updateNote(req: Request, res: Response): Promise<void> {
     try {
-      const { title, content } = req.body;
-      const note = await noteService.updateNote(req.params.id, { title, content });
+      const { title, content, categoryIds } = req.body;
+      const note = await noteService.updateNote(req.params.id, { title, content, categoryIds });
       res.json(note);
     } catch (error) {
       if (error instanceof Error) {

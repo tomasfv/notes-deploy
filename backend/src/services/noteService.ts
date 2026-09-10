@@ -4,19 +4,27 @@ import { Note } from '../models';
 interface CreateNoteData {
   title: string;
   content: string;
+  categoryIds?: string[];
 }
 
 interface UpdateNoteData {
   title?: string;
   content?: string;
+  categoryIds?: string[];
 }
 
 class NoteService {
-  async getActiveNotes(): Promise<Note[]> {
+  async getActiveNotes(categoryId?: string): Promise<Note[]> {
+    if (categoryId) {
+      return noteRepository.findByCategoryId(categoryId, false);
+    }
     return noteRepository.findAll(false);
   }
 
-  async getArchivedNotes(): Promise<Note[]> {
+  async getArchivedNotes(categoryId?: string): Promise<Note[]> {
+    if (categoryId) {
+      return noteRepository.findByCategoryId(categoryId, true);
+    }
     return noteRepository.findAll(true);
   }
 
@@ -38,6 +46,7 @@ class NoteService {
     return noteRepository.create({
       title: data.title.trim(),
       content: data.content.trim(),
+      categoryIds: data.categoryIds,
     });
   }
 
@@ -52,9 +61,10 @@ class NoteService {
     if (data.content !== undefined && data.content.trim() === '') {
       throw new Error('Content cannot be empty');
     }
-    const updateData: UpdateNoteData = {};
+    const updateData: { title?: string; content?: string; categoryIds?: string[] } = {};
     if (data.title !== undefined) updateData.title = data.title.trim();
     if (data.content !== undefined) updateData.content = data.content.trim();
+    if (data.categoryIds !== undefined) updateData.categoryIds = data.categoryIds;
     return noteRepository.update(id, updateData) as Promise<Note>;
   }
 

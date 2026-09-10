@@ -2,41 +2,31 @@ import { DataTypes, Model } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import sequelize from '../config/database';
 
-class Note extends Model {
+class Category extends Model {
   declare id: string;
-  declare title: string;
-  declare content: string;
-  declare archived: boolean;
+  declare name: string;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
-  declare setCategories: (ids: string[]) => Promise<void>;
 }
 
-Note.init(
+Category.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: uuidv4,
       primaryKey: true,
     },
-    title: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    archived: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      unique: true,
     },
   },
   {
     sequelize,
-    modelName: 'Note',
-    tableName: 'notes',
+    modelName: 'Category',
+    tableName: 'categories',
   }
 );
 
-export default Note;
+export default Category;
