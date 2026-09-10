@@ -2,7 +2,9 @@ import axios from 'axios';
 import { Note, CreateNoteData, UpdateNoteData } from '../types';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : '/api',
 });
 
 export const noteService = {
