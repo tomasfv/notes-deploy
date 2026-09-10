@@ -3,9 +3,10 @@ import { NavLink } from 'react-router-dom';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onLogout: () => void;
 }
 
-const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+const Sidebar = ({ isOpen, onClose, onLogout }: SidebarProps) => {
   return (
     <>
       {/* Backdrop - solo mobile */}
@@ -73,8 +74,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <span className="font-medium">Archived Notes</span>
           </NavLink>
         </nav>
-        <div className="p-4 border-t border-zinc-700 text-xs text-zinc-500">
-          v1.0.0
+        <div className="p-4 border-t border-zinc-700">
+          <button
+            onClick={onLogout}
+            className="w-full text-left text-zinc-400 hover:text-white text-sm transition-colors px-4 py-2 hover:bg-zinc-800 rounded-lg"
+          >
+            Logout
+          </button>
+          <p className="text-xs text-zinc-600 mt-2 px-4">v1.0.0</p>
         </div>
       </aside>
     </>

@@ -139,6 +139,7 @@ DB_PORT=5432
 DB_NAME=ensolvers_notes
 DB_USER=postgres
 DB_PASSWORD=your_password_here
+JWT_SECRET=your_jwt_secret_here
 ```
 
 ### Backend (Railway)
@@ -148,6 +149,7 @@ DB_PASSWORD=your_password_here
 | `DATABASE_URL` | `${{PostgreSQL.DATABASE_URL}}` (auto-linked) |
 | `NODE_ENV` | `production` |
 | `FRONTEND_URL` | `https://notes-deploy-two.vercel.app` |
+| `JWT_SECRET` | `your_production_jwt_secret` |
 
 ### Frontend (Vercel)
 
@@ -170,6 +172,13 @@ DB_PASSWORD=your_password_here
 - **Health Check:** http://localhost:3000/api/health
 
 ## API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | /api/auth/login | No | Login, returns JWT token |
+| GET | /api/auth/me | Yes | Returns current user info |
 
 ### Notes
 
@@ -195,6 +204,26 @@ DB_PASSWORD=your_password_here
 | DELETE | /api/notes/:id/categories/:categoryId | Remove a category from a note |
 
 ## Features
+
+### Authentication (JWT)
+
+Simple authentication with JWT tokens:
+
+| Action | Description |
+|--------|-------------|
+| Login | Redirects to `/login` if no token is found |
+| Logout | Clears token and redirects to `/login` |
+| Protected routes | All routes except `/login` require a valid JWT token |
+| Auto-redirect | If token expires or is invalid, user is redirected to `/login` |
+
+**Default credentials:**
+
+| Field | Value |
+|-------|-------|
+| Username | `admin` |
+| Password | `admin123` |
+
+The default user is created automatically on first server startup.
 
 ### Toast Notifications (React Hot Toast)
 
@@ -227,10 +256,6 @@ Validation is implemented on both backend and frontend:
 | Note content | Required, 1-5000 characters |
 | Category name | Required, 1-100 characters |
 | Note/Category ID | Must be a valid UUID |
-
-### Note View Modal
-
-Clicking a note card opens a read-only modal showing the full note content, so users can read long notes without entering edit mode.
 
 ### Responsive Design
 

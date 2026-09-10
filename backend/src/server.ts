@@ -1,6 +1,7 @@
 import app from "./app";
 import sequelize from "./config/database";
 import "./models";
+import { seedUser } from "./seeders/createUser";
 
 const PORT = process.env.PORT || 3000;
 
@@ -11,6 +12,8 @@ const startServer = async () => {
 
     await sequelize.sync({ alter: true });
     console.log("Database synchronized");
+
+    await seedUser();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

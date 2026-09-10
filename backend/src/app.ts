@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import notesRouter from './routes/notes';
 import categoriesRouter from './routes/categories';
+import authRouter from './routes/auth';
 import { errorHandler } from './middlewares/errorHandler';
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
+app.use('/api/auth', authRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/categories', categoriesRouter);
 
