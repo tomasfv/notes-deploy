@@ -2,6 +2,12 @@
 
 A full-stack web application for creating, editing, archiving, and filtering notes with categories.
 
+## Live Deployment
+
+- **Frontend:** https://notes-deploy-two.vercel.app
+- **Backend API:** https://notes-deploy-production.up.railway.app
+- **Health Check:** https://notes-deploy-production.up.railway.app/api/health
+
 ## Tech Stack
 
 ### Frontend
@@ -93,6 +99,8 @@ npm run dev
 
 ## Environment Variables
 
+### Backend (local)
+
 Create a `.env` file in the `backend/` directory:
 
 ```env
@@ -103,6 +111,20 @@ DB_NAME=ensolvers_notes
 DB_USER=postgres
 DB_PASSWORD=your_password_here
 ```
+
+### Backend (Railway)
+
+| Variable | Value |
+|----------|-------|
+| `DATABASE_URL` | `${{PostgreSQL.DATABASE_URL}}` (auto-linked) |
+| `NODE_ENV` | `production` |
+| `FRONTEND_URL` | `https://notes-deploy-two.vercel.app` |
+
+### Frontend (Vercel)
+
+| Variable | Value |
+|----------|-------|
+| `VITE_API_URL` | `https://notes-deploy-production.up.railway.app` |
 
 ## Running the App
 
