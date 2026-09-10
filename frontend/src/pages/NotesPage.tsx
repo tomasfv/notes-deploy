@@ -7,6 +7,7 @@ import NoteCard from '../components/NoteCard';
 import EmptyCard from '../components/EmptyCard';
 import NoteModal from '../components/NoteModal';
 import EditNoteModal from '../components/EditNoteModal';
+import NoteViewModal from '../components/NoteViewModal';
 
 const NotesPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -15,6 +16,7 @@ const NotesPage = () => {
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const loadNotes = async (categoryId?: string | null) => {
@@ -89,6 +91,11 @@ const NotesPage = () => {
     setIsEditModalOpen(true);
   };
 
+  const openViewModal = (note: Note) => {
+    setSelectedNote(note);
+    setIsViewModalOpen(true);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -140,6 +147,7 @@ const NotesPage = () => {
             key={note.id}
             note={note}
             onEdit={openEditModal}
+            onView={openViewModal}
             onArchive={handleArchiveNote}
             showArchiveOption
           />
@@ -158,6 +166,14 @@ const NotesPage = () => {
           setSelectedNote(null);
         }}
         onSubmit={handleEditNote}
+      />
+      <NoteViewModal
+        isOpen={isViewModalOpen}
+        note={selectedNote}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setSelectedNote(null);
+        }}
       />
     </div>
   );

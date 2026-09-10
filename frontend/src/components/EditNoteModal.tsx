@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Note, Category } from '../types';
 import { categoryService } from '../services/categoryService';
+import { noteSchema } from '../validations/note';
 
 interface EditNoteModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ const EditNoteModal = ({ isOpen, note, onClose, onSubmit }: EditNoteModalProps) 
   const [content, setContent] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
 
   useEffect(() => {
     if (isOpen) {
@@ -31,12 +33,27 @@ const EditNoteModal = ({ isOpen, note, onClose, onSubmit }: EditNoteModalProps) 
 
   if (!isOpen || !note) return null;
 
+  const validate = () => {
+    const result = noteSchema.safeParse({ title, content });
+    if (!result.success) {
+      const fieldErrors: { title?: string; content?: string } = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as 'title' | 'content';
+        fieldErrors[field] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && content.trim()) {
-      onSubmit(note.id, title.trim(), content.trim(), selectedCategoryIds);
-      onClose();
-    }
+    if (!validate()) return;
+    onSubmit(note.id, title.trim(), content.trim(), selectedCategoryIds);
+    setErrors({});
+    onClose();
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -67,18 +84,26 @@ const EditNoteModal = ({ isOpen, note, onClose, onSubmit }: EditNoteModalProps) 
               type="text"
               placeholder="Title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900"
+              onChange={(e) => { setTitle(e.target.value); setErrors((prev) => ({ ...prev, title: undefined })); }}
+              maxLength={200}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 ${
+                errors.title ? 'border-red-500' : 'border-zinc-300'
+              }`}
             />
+            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
           </div>
           <div className="mb-4">
             <textarea
               placeholder="Write your note here..."
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => { setContent(e.target.value); setErrors((prev) => ({ ...prev, content: undefined })); }}
               rows={6}
-              className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 resize-none"
+              maxLength={5000}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 resize-none ${
+                errors.content ? 'border-red-500' : 'border-zinc-300'
+              }`}
             />
+            {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
           </div>
           {categories.length > 0 && (
             <div className="mb-5">

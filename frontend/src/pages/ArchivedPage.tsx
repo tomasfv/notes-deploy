@@ -4,11 +4,13 @@ import { Note } from '../types';
 import { noteService } from '../services/noteService';
 import NoteCard from '../components/NoteCard';
 import EditNoteModal from '../components/EditNoteModal';
+import NoteViewModal from '../components/NoteViewModal';
 
 const ArchivedPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const loadNotes = async () => {
@@ -71,6 +73,11 @@ const ArchivedPage = () => {
     setIsEditModalOpen(true);
   };
 
+  const openViewModal = (note: Note) => {
+    setSelectedNote(note);
+    setIsViewModalOpen(true);
+  };
+
   const handleEditNote = async (id: string, title: string, content: string, categoryIds?: string[]) => {
     try {
       const updatedNote = await noteService.updateNote(id, { title, content, categoryIds });
@@ -105,6 +112,7 @@ const ArchivedPage = () => {
               key={note.id}
               note={note}
               onEdit={openEditModal}
+              onView={openViewModal}
               onUnarchive={handleUnarchiveNote}
               onDelete={confirmDelete}
               showUnarchiveOption
@@ -121,6 +129,14 @@ const ArchivedPage = () => {
           setSelectedNote(null);
         }}
         onSubmit={handleEditNote}
+      />
+      <NoteViewModal
+        isOpen={isViewModalOpen}
+        note={selectedNote}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setSelectedNote(null);
+        }}
       />
     </div>
   );

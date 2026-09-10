@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Category } from '../types';
 import { categoryService } from '../services/categoryService';
+import { categorySchema } from '../validations/category';
 import DropdownMenu from '../components/DropdownMenu';
 
 const CategoriesPage = () => {
@@ -13,6 +14,7 @@ const CategoriesPage = () => {
   const [newName, setNewName] = useState('');
   const [editName, setEditName] = useState('');
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
 
   const loadCategories = async () => {
     try {
@@ -32,8 +34,10 @@ const CategoriesPage = () => {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!newName.trim()) {
-      setError('Category name is required');
+    setNameError('');
+    const result = categorySchema.safeParse({ name: newName });
+    if (!result.success) {
+      setNameError(result.error.issues[0].message);
       return;
     }
     try {
@@ -50,9 +54,11 @@ const CategoriesPage = () => {
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setNameError('');
     if (!selectedCategory) return;
-    if (!editName.trim()) {
-      setError('Category name is required');
+    const result = categorySchema.safeParse({ name: editName });
+    if (!result.success) {
+      setNameError(result.error.issues[0].message);
       return;
     }
     try {
@@ -102,11 +108,13 @@ const CategoriesPage = () => {
     setEditName(category.name);
     setIsEditModalOpen(true);
     setError('');
+    setNameError('');
   };
 
   const openCreateModal = () => {
     setNewName('');
     setError('');
+    setNameError('');
     setIsCreateModalOpen(true);
   };
 
@@ -145,7 +153,7 @@ const CategoriesPage = () => {
               className="bg-white border border-zinc-200 rounded-lg p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start">
-                <h3 className="font-semibold text-zinc-900 text-lg">{category.name}</h3>
+                <h3 className="font-semibold text-zinc-900 text-lg truncate min-w-0 pr-8">{category.name}</h3>
                 <DropdownMenu
                   items={[
                     { label: 'Edit', onClick: () => openEditModal(category) },
@@ -180,10 +188,14 @@ const CategoriesPage = () => {
                   type="text"
                   placeholder="Category name"
                   value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900"
+                  onChange={(e) => { setNewName(e.target.value); setNameError(''); }}
+                  maxLength={100}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 ${
+                    nameError ? 'border-red-500' : 'border-zinc-300'
+                  }`}
                   autoFocus
                 />
+                {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
               </div>
               <div className="flex justify-end gap-3">
                 <button
@@ -230,10 +242,14 @@ const CategoriesPage = () => {
                   type="text"
                   placeholder="Category name"
                   value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-4 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900"
+                  onChange={(e) => { setEditName(e.target.value); setNameError(''); }}
+                  maxLength={100}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-400 text-zinc-900 ${
+                    nameError ? 'border-red-500' : 'border-zinc-300'
+                  }`}
                   autoFocus
                 />
+                {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
               </div>
               <div className="flex justify-end gap-3">
                 <button

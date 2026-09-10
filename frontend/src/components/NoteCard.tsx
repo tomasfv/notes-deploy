@@ -4,6 +4,7 @@ import DropdownMenu from './DropdownMenu';
 interface NoteCardProps {
   note: Note;
   onEdit: (note: Note) => void;
+  onView?: (note: Note) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -15,6 +16,7 @@ interface NoteCardProps {
 const NoteCard = ({
   note,
   onEdit,
+  onView,
   onArchive,
   onUnarchive,
   onDelete,
@@ -43,10 +45,15 @@ const NoteCard = ({
   }
 
   return (
-    <div className="w-full bg-white border border-zinc-200 rounded-lg p-5 relative group hover:shadow-md transition-shadow">
+    <div
+      className="w-full bg-white border border-zinc-200 rounded-lg p-5 relative group hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => onView?.(note)}
+    >
       <div className="flex justify-between items-start mb-3">
-        <h3 className="font-semibold text-zinc-900 text-lg pr-8">{note.title}</h3>
-        {menuItems.length > 0 && <DropdownMenu items={menuItems} />}
+        <h3 className="font-semibold text-zinc-900 text-lg pr-8 line-clamp-2 min-w-0">{note.title}</h3>
+        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          {menuItems.length > 0 && <DropdownMenu items={menuItems} />}
+        </div>
       </div>
       <p className="text-zinc-500 text-xs mb-3">{formatDate(note.createdAt)}</p>
       <p className="text-zinc-700 text-sm line-clamp-4">{note.content}</p>
