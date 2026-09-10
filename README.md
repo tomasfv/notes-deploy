@@ -232,6 +232,23 @@ Validation is implemented on both backend and frontend:
 
 Clicking a note card opens a read-only modal showing the full note content, so users can read long notes without entering edit mode.
 
+### Responsive Design
+
+The app is fully responsive for mobile and desktop:
+
+| Viewport | Sidebar | Hamburger | Content |
+|----------|---------|-----------|---------|
+| Mobile (< 768px) | Hidden, overlay on open | Visible (top-left) | Full width with top padding |
+| Desktop (>= 768px) | Always visible, fixed | Hidden | Shifted right (ml-64) |
+
+**Mobile features:**
+- Hamburger menu button with SVG icon in a fixed top header
+- Sidebar slides in from the left with backdrop overlay
+- Clicking a link or the backdrop closes the sidebar
+- Smooth transitions (200ms ease-in-out)
+- Note/category titles truncate with ellipsis
+- Grids adapt: 1 col (mobile) → 2 cols → 3 cols → 4 cols (desktop)
+
 ### CI/CD
 
 - **CI:** GitHub Actions runs TypeScript checks and tests on every push to `main`/`develop` and on pull requests
