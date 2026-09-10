@@ -21,6 +21,7 @@ A full-stack web application for creating, editing, archiving, and filtering not
 | Axios | ^1.6.2 |
 | React Router DOM | ^7.18.3 |
 | React Hot Toast | ^2.5.2 |
+| Zod | ^4.6.1 |
 
 ### Backend
 
@@ -31,6 +32,7 @@ A full-stack web application for creating, editing, archiving, and filtering not
 | Sequelize | ^6.35.2 |
 | PostgreSQL | >= 16 |
 | TypeScript | ^5.3.3 |
+| Express Validator | ^7.3.2 |
 
 ## Prerequisites
 
@@ -186,9 +188,53 @@ Non-intrusive toast notifications for user feedback:
 - Toasts are centered at the top of the screen
 - Delete operations show a confirmation dialog before proceeding
 
+### Input Validation
+
+Validation is implemented on both backend and frontend:
+
+- **Backend:** Express Validator middleware validates all request body and params before reaching controllers
+- **Frontend:** Zod schemas validate form inputs with inline error messages
+
+| Field | Rule |
+|-------|------|
+| Note title | Required, 1-200 characters |
+| Note content | Required, 1-5000 characters |
+| Category name | Required, 1-100 characters |
+| Note/Category ID | Must be a valid UUID |
+
+### Note View Modal
+
+Clicking a note card opens a read-only modal showing the full note content, so users can read long notes without entering edit mode.
+
+### CI/CD
+
+- **CI:** GitHub Actions runs TypeScript checks and tests on every push to `main`/`develop` and on pull requests
+- **CD:** Automatic deployment via Railway (backend) and Vercel (frontend)
+
+## Testing
+
+### Run Tests
+
+```bash
+# Backend (21 tests)
+cd backend && npm test
+
+# Frontend (14 tests)
+cd frontend && npm test
+```
+
+### Test Coverage
+
+| Area | Backend | Frontend |
+|------|---------|----------|
+| Validation | 10 tests (express-validator) | 11 tests (zod schemas) |
+| Services | 11 tests (CRUD logic, mocking) | 3 tests (API calls) |
+| **Total** | **21 tests** | **14 tests** |
+
 ## Project Structure
 
 ```
+├── .github/workflows/ci.yml  # GitHub Actions CI
 ├── setup.sh              # Setup script for Linux/macOS
 ├── package.json          # Root package with concurrently
 ├── backend/
@@ -199,7 +245,9 @@ Non-intrusive toast notifications for user feedback:
 │   │   ├── services/     # Business logic layer
 │   │   ├── controllers/  # HTTP request handlers
 │   │   ├── routes/       # API routes
-│   │   ├── middlewares/  # Express middlewares
+│   │   ├── validations/  # Express Validator schemas
+│   │   ├── middlewares/  # Express middlewares (validate, errorHandler)
+│   │   ├── __tests__/    # Jest unit tests
 │   │   ├── app.ts        # Express app setup
 │   │   └── server.ts     # Server entry point
 │   └── package.json
@@ -208,7 +256,9 @@ Non-intrusive toast notifications for user feedback:
     │   ├── components/   # Reusable UI components
     │   ├── pages/        # Page components
     │   ├── services/     # API service (Axios)
+    │   ├── validations/  # Zod schemas
     │   ├── types/        # TypeScript interfaces
+    │   ├── __tests__/    # Jest unit tests
     │   └── App.tsx       # Main app with routing
     └── package.json
 ```
