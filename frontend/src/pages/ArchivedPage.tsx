@@ -6,6 +6,15 @@ import NoteCard from '../components/NoteCard';
 import EditNoteModal from '../components/EditNoteModal';
 import NoteViewModal from '../components/NoteViewModal';
 
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-64">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-zinc-400 text-sm">Loading archived notes...</p>
+    </div>
+  </div>
+);
+
 const ArchivedPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,22 +96,16 @@ const ArchivedPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-zinc-500">Loading archived notes...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-zinc-900">Archived Notes</h1>
-        <p className="text-zinc-500 mt-1">{notes.length} archived notes</p>
+        <p className="text-zinc-500 mt-1">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</p>
       </div>
       {notes.length === 0 ? (
-        <div className="flex items-center justify-center h-64 bg-white border border-zinc-200 rounded-lg">
+        <div className="flex items-center justify-center h-64 bg-white border border-zinc-200 rounded-xl">
           <p className="text-zinc-400">No archived notes</p>
         </div>
       ) : (

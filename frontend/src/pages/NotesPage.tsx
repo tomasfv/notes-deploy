@@ -9,6 +9,15 @@ import NoteModal from '../components/NoteModal';
 import EditNoteModal from '../components/EditNoteModal';
 import NoteViewModal from '../components/NoteViewModal';
 
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-64">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-zinc-400 text-sm">Loading notes...</p>
+    </div>
+  </div>
+);
+
 const NotesPage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -96,19 +105,13 @@ const NotesPage = () => {
     setIsViewModalOpen(true);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-zinc-500">Loading notes...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-zinc-900">All Notes</h1>
-        <p className="text-zinc-500 mt-1">{notes.length} notes</p>
+        <p className="text-zinc-500 mt-1">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</p>
       </div>
 
       {/* Category Filter */}
@@ -116,10 +119,10 @@ const NotesPage = () => {
         <div className="flex flex-wrap gap-2 mb-6">
           <button
             onClick={() => handleFilterByCategory(null)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ${
               selectedCategoryId === null
-                ? 'bg-zinc-900 text-white'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
             }`}
           >
             All
@@ -128,13 +131,13 @@ const NotesPage = () => {
             <button
               key={category.id}
               onClick={() => handleFilterByCategory(category.id)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 max-w-[140px] truncate ${
                 selectedCategoryId === category.id
-                  ? 'bg-zinc-900 text-white'
-                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
               }`}
             >
-              {category.name}
+              <span title={category.name}>{category.name}</span>
             </button>
           ))}
         </div>

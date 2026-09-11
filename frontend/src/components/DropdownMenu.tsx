@@ -28,7 +28,7 @@ const DropdownMenu = ({ items }: DropdownMenuProps) => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1 rounded hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
+        className="p-1.5 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-zinc-600"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -42,19 +42,26 @@ const DropdownMenu = ({ items }: DropdownMenuProps) => {
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-36 bg-white border border-zinc-200 rounded-lg shadow-lg z-10">
-          {items.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                item.onClick();
-                setIsOpen(false);
-              }}
-              className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 first:rounded-t-lg last:rounded-b-lg transition-colors"
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute right-0 mt-1 w-40 bg-white border border-zinc-200 rounded-xl shadow-xl z-10 overflow-hidden">
+          {items.map((item, index) => {
+            const isDelete = item.label === 'Delete';
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  item.onClick();
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                  isDelete
+                    ? 'text-red-600 hover:bg-red-50'
+                    : 'text-zinc-700 hover:bg-zinc-50'
+                } ${index === 0 ? 'rounded-t-xl' : ''} ${index === items.length - 1 ? 'rounded-b-xl' : ''}`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

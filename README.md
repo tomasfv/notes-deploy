@@ -8,6 +8,10 @@ A full-stack web application for creating, editing, archiving, and filtering not
 - **Backend API:** https://notes-deploy-production.up.railway.app
 - **Health Check:** https://notes-deploy-production.up.railway.app/api/health
 
+## Login Credentials
+- **Username:** admin
+- **Password:** admin123
+
 ## Tech Stack
 
 ### Frontend
