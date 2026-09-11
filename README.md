@@ -24,8 +24,13 @@ A full-stack web application for creating, editing, archiving, and filtering not
 | Tailwind CSS | ^3.4.0 |
 | Axios | ^1.6.2 |
 | React Router DOM | ^7.18.3 |
-| React Hot Toast | ^2.5.2 |
+| React Hot Toast | ^2.6.0 |
 | Zod | ^4.6.1 |
+| Jest | ^30.5.1 |
+| ts-jest | ^29.4.12 |
+| @testing-library/react | ^14.3.1 |
+| @testing-library/user-event | ^14.6.7 |
+| @testing-library/jest-dom | ^7.0.1 |
 
 ### Backend
 
@@ -37,6 +42,10 @@ A full-stack web application for creating, editing, archiving, and filtering not
 | PostgreSQL | >= 16 |
 | TypeScript | ^5.3.3 |
 | Express Validator | ^7.3.2 |
+| bcryptjs | ^3.0.3 |
+| jsonwebtoken | ^9.0.3 |
+| Jest | ^30.5.1 |
+| ts-jest | ^29.4.12 |
 
 ## Prerequisites
 
@@ -184,6 +193,12 @@ JWT_SECRET=your_jwt_secret_here
 | POST | /api/auth/login | No | Login, returns JWT token |
 | GET | /api/auth/me | Yes | Returns current user info |
 
+### Health Check
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/health | Returns `{ status: 'ok' }` |
+
 ### Notes
 
 | Method | Endpoint | Description |
@@ -203,9 +218,8 @@ JWT_SECRET=your_jwt_secret_here
 |--------|----------|-------------|
 | GET | /api/categories | List all categories |
 | POST | /api/categories | Create a category |
+| PUT | /api/categories/:id | Update a category |
 | DELETE | /api/categories/:id | Delete a category |
-| POST | /api/notes/:id/categories | Assign categories to a note |
-| DELETE | /api/notes/:id/categories/:categoryId | Remove a category from a note |
 
 ## Features
 
@@ -291,7 +305,7 @@ The app is fully responsive for mobile and desktop:
 # Backend (21 tests)
 cd backend && npm test
 
-# Frontend (14 tests)
+# Frontend (29 tests)
 cd frontend && npm test
 ```
 
@@ -301,41 +315,46 @@ cd frontend && npm test
 |------|---------|----------|
 | Validation | 10 tests (express-validator) | 11 tests (zod schemas) |
 | Services | 11 tests (CRUD logic, mocking) | 3 tests (API calls) |
-| **Total** | **21 tests** | **14 tests** |
+| Components | - | 15 tests (RTL, user interactions) |
+| **Total** | **21 tests** | **29 tests** |
 
 ## Project Structure
 
 ```
-├── .github/workflows/ci.yml  # GitHub Actions CI
-├── docker-compose.yml        # Docker Compose (dev)
-├── setup.sh              # Setup script for Linux/macOS
-├── package.json          # Root package with concurrently
+├── .gitattributes           # Force LF line endings for shell scripts
+├── .github/workflows/ci.yml # GitHub Actions CI
+├── docker-compose.yml       # Docker Compose (dev)
+├── setup.sh                 # Setup script for Linux/macOS
+├── package.json             # Root package with concurrently
 ├── backend/
-│   ├── Dockerfile        # Docker image for backend
-│   ├── .dockerignore     # Docker ignore rules
+│   ├── Dockerfile           # Docker image for backend
+│   ├── .dockerignore        # Docker ignore rules
 │   ├── src/
-│   │   ├── config/       # Database configuration
-│   │   ├── models/       # Sequelize models
-│   │   ├── repositories/ # Data access layer
-│   │   ├── services/     # Business logic layer
-│   │   ├── controllers/  # HTTP request handlers
-│   │   ├── routes/       # API routes
-│   │   ├── validations/  # Express Validator schemas
-│   │   ├── middlewares/  # Express middlewares (validate, errorHandler)
-│   │   ├── __tests__/    # Jest unit tests
-│   │   ├── app.ts        # Express app setup
-│   │   └── server.ts     # Server entry point
+│   │   ├── config/          # Database configuration
+│   │   ├── models/          # Sequelize models (Note, Category, User)
+│   │   ├── repositories/    # Data access layer
+│   │   ├── services/        # Business logic layer (auth, note, category)
+│   │   ├── controllers/     # HTTP request handlers
+│   │   ├── routes/          # API routes (auth, notes, categories)
+│   │   ├── validations/     # Express Validator schemas
+│   │   ├── middlewares/     # Express middlewares (auth, validate, errorHandler)
+│   │   ├── seeders/         # Auto-seed default user on startup
+│   │   ├── __tests__/       # Jest unit tests
+│   │   ├── app.ts           # Express app setup
+│   │   └── server.ts        # Server entry point
 │   └── package.json
 └── frontend/
-    ├── Dockerfile        # Docker image for frontend
-    ├── .dockerignore     # Docker ignore rules
+    ├── Dockerfile           # Docker image for frontend
+    ├── .dockerignore        # Docker ignore rules
     ├── src/
-    │   ├── components/   # Reusable UI components
-    │   ├── pages/        # Page components
-    │   ├── services/     # API service (Axios)
-    │   ├── validations/  # Zod schemas
-    │   ├── types/        # TypeScript interfaces
-    │   ├── __tests__/    # Jest unit tests
-    │   └── App.tsx       # Main app with routing
+    │   ├── components/      # Reusable UI components (Sidebar, Modals, Cards)
+    │   ├── pages/           # Page components (Notes, Categories, Archived, Login)
+    │   ├── services/        # API services (auth, notes, categories)
+    │   ├── validations/     # Zod schemas
+    │   ├── types/           # TypeScript interfaces
+    │   ├── __tests__/       # Jest unit tests
+    │   │   ├── setup.ts     # Jest setup (jest-dom, TextEncoder)
+    │   │   └── components/  # RTL component tests
+    │   └── App.tsx          # Main app with routing
     └── package.json
 ```
