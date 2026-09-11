@@ -3,7 +3,8 @@ import type { Config } from 'jest';
 const config: Config = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.test.ts'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       useESM: false,
@@ -13,6 +14,7 @@ const config: Config = {
         esModuleInterop: true,
         moduleResolution: 'node',
         target: 'es2020',
+        jsx: 'react-jsx',
       },
     }],
   },
