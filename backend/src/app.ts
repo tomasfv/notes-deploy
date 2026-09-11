@@ -5,6 +5,7 @@ import notesRouter from './routes/notes';
 import categoriesRouter from './routes/categories';
 import authRouter from './routes/auth';
 import { errorHandler } from './middlewares/errorHandler';
+import { authMiddleware } from './middlewares/auth';
 
 dotenv.config();
 
@@ -18,8 +19,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRouter);
-app.use('/api/notes', notesRouter);
-app.use('/api/categories', categoriesRouter);
+app.use('/api/notes', authMiddleware, notesRouter);
+app.use('/api/categories', authMiddleware, categoriesRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
