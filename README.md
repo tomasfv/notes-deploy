@@ -1,4 +1,4 @@
-# Ensolvers Notes Challenge
+# Notes App
 
 A full-stack web application for creating, editing, archiving, and filtering notes with categories.
 
@@ -57,24 +57,7 @@ A full-stack web application for creating, editing, archiving, and filtering not
 
 ## Installation
 
-### Linux / macOS
-
-Run the setup script with a single command:
-
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-This will:
-1. Verify Node.js and PostgreSQL are installed
-2. Create the `ensolvers_notes` database if it doesn't exist
-3. Install all dependencies (backend, frontend, root)
-4. Start both servers (backend on port 3000, frontend on port 5173)
-
-### Windows
-
-Since the setup script is designed for Linux/macOS, follow these manual steps:
+### Manual Setup
 
 **1. Verify prerequisites:**
 
@@ -87,7 +70,7 @@ psql --version
 **2. Create the database:**
 
 ```bash
-psql -U postgres -c "CREATE DATABASE ensolvers_notes"
+psql -U postgres -c "CREATE DATABASE notesapp"
 ```
 
 **3. Install dependencies:**
@@ -113,32 +96,6 @@ cd ..
 npm run dev
 ```
 
-### Docker (Development)
-
-Run the entire stack with Docker Compose (backend + frontend + PostgreSQL):
-
-```bash
-docker-compose up
-```
-
-This will:
-1. Start PostgreSQL on port 5432
-2. Build and start the backend on port 3000
-3. Build and start the frontend on port 5173
-
-**Other commands:**
-
-```bash
-docker-compose up -d          # Detached mode
-docker-compose down           # Stop all containers
-docker-compose up --build     # Rebuild images
-docker-compose down -v        # Stop and remove volumes (resets DB)
-```
-
-**URLs:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3000
-
 ## Environment Variables
 
 ### Backend (local)
@@ -149,7 +106,7 @@ Create a `.env` file in the `backend/` directory:
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=ensolvers_notes
+DB_NAME=notesapp
 DB_USER=postgres
 DB_PASSWORD=your_password_here
 JWT_SECRET=your_jwt_secret_here
@@ -321,14 +278,9 @@ cd frontend && npm test
 ## Project Structure
 
 ```
-├── .gitattributes           # Force LF line endings for shell scripts
 ├── .github/workflows/ci.yml # GitHub Actions CI
-├── docker-compose.yml       # Docker Compose (dev)
-├── setup.sh                 # Setup script for Linux/macOS
 ├── package.json             # Root package with concurrently
 ├── backend/
-│   ├── Dockerfile           # Docker image for backend
-│   ├── .dockerignore        # Docker ignore rules
 │   ├── src/
 │   │   ├── config/          # Database configuration
 │   │   ├── models/          # Sequelize models (Note, Category, User)
@@ -344,8 +296,6 @@ cd frontend && npm test
 │   │   └── server.ts        # Server entry point
 │   └── package.json
 └── frontend/
-    ├── Dockerfile           # Docker image for frontend
-    ├── .dockerignore        # Docker ignore rules
     ├── src/
     │   ├── components/      # Reusable UI components (Sidebar, Modals, Cards)
     │   ├── pages/           # Page components (Notes, Categories, Archived, Login)

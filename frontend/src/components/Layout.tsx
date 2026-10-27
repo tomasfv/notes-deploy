@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import { authService } from '../services/authService';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import { authService } from "../services/authService";
+import toast from "react-hot-toast";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,8 +10,8 @@ const Layout = () => {
 
   const handleLogout = () => {
     authService.logout();
-    toast.success('Logged out');
-    navigate('/login');
+    toast.success("Logged out");
+    navigate("/login");
   };
 
   return (
@@ -24,11 +24,22 @@ const Layout = () => {
             className="text-white p-1 hover:bg-zinc-700 rounded-lg transition-colors"
             aria-label="Open menu"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
-          <h1 className="text-white font-bold ml-3 text-lg">ENSOLVERS</h1>
+          <h1 className="text-white font-bold ml-3 text-lg">My Notes</h1>
         </div>
         <button
           onClick={handleLogout}
@@ -39,7 +50,11 @@ const Layout = () => {
       </div>
 
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={handleLogout} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onLogout={handleLogout}
+      />
 
       {/* Main content */}
       <main className="p-4 pt-20 md:p-8 md:pt-8 md:ml-64">

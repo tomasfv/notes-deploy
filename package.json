@@ -1,7 +1,7 @@
 {
-  "name": "ensolvers-notes",
+  "name": "notesapp",
   "version": "1.0.0",
-  "description": "Ensolvers Notes Challenge - Full Stack App",
+  "description": "Notes App - Full Stack App",
   "scripts": {
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
     "install:all": "cd backend && npm install && cd ../frontend && npm install"

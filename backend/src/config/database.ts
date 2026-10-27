@@ -15,7 +15,7 @@ const sequelize = process.env.DATABASE_URL
       },
     })
   : new Sequelize(
-      process.env.DB_NAME || "ensolvers_notes",
+      process.env.DB_NAME || "notesapp",
       process.env.DB_USER || "postgres",
       process.env.DB_PASSWORD || "yourPassword",
       {
