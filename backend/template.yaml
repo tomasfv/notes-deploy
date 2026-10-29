@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Notes App - API Express sobre AWS Lambda
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures:
+      - arm64
+    MemorySize: 512
+    Timeout: 15
+
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: ApiLogGroup
+    Properties:
+      FunctionName: notesapp-api
+      CodeUri: ./
+      Handler: dist/lambda.handler
+      Environment:
+        Variables:
+          NODE_ENV: production
+          # Temporal: se ajusta al dominio de CloudFront del frontend.
+          FRONTEND_URL: "*"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+    Metadata:
+      BuildProperties:
+        UseNpmCi: true
+
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/notesapp-api
+      RetentionInDays: 14
+
+Outputs:
+  FunctionName:
+    Description: Nombre de la funcion Lambda
+    Value: !Ref ApiFunction
+  FunctionArn:
+    Description: ARN de la funcion Lambda
+    Value: !GetAtt ApiFunction.Arn

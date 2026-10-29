@@ -1,12 +1,32 @@
-import { Sequelize } from "sequelize";
+import { Sequelize, type Options } from "sequelize";
 import dotenv from "dotenv";
 
 dotenv.config();
 
+const isLambda = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+// En Lambda no conviene mantener un pool grande: cada invocación cierra sus
+// conexiones (ver src/lambda.ts) y los proveedores gestionados limitan el
+// número de conexiones simultáneas.
+const commonOptions: Options = {
+  dialect: "postgres",
+  logging: false,
+  ...(isLambda
+    ? {
+        pool: {
+          max: 2,
+          min: 0,
+          idle: 0,
+          acquire: 3000,
+          evict: 15000,
+        },
+      }
+    : {}),
+};
+
 const sequelize = process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
-      dialect: "postgres",
-      logging: false,
+      ...commonOptions,
       dialectOptions: {
         ssl: {
           require: true,
@@ -19,10 +39,9 @@ const sequelize = process.env.DATABASE_URL
       process.env.DB_USER || "postgres",
       process.env.DB_PASSWORD || "yourPassword",
       {
+        ...commonOptions,
         host: process.env.DB_HOST || "localhost",
-        port: parseInt(process.env.DB_PORT || "5432"),
-        dialect: "postgres",
-        logging: false,
+        port: parseInt(process.env.DB_PORT || "5432", 10),
       },
     );
 

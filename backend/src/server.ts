@@ -10,10 +10,14 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("Database connected successfully");
 
-    await sequelize.sync({ alter: false });
-    console.log("Database synchronized");
+    // Solo desarrollo local: en producción el esquema se gestiona con
+    // migraciones y el usuario admin se crea una sola vez.
+    if (process.env.NODE_ENV !== "production") {
+      await sequelize.sync({ alter: false });
+      console.log("Database synchronized");
 
-    await seedUser();
+      await seedUser();
+    }
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
